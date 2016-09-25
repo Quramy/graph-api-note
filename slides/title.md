@@ -1,7 +1,11 @@
 
 <h1>
   Graph API <br />
-GraphQL and Falcor
+<span style="font-size:.8em">
+  GraphQL and Falcor
+</span>
 </h1>
 
-by @Quramy 2016.09.27
+by @Quramy
+
+2016.9.27 \#reactjs_meetup
