@@ -5,16 +5,11 @@
 
 ### Question
 
-* GraphQLとかFalcorって何なの？
-* 何のために作られたの？
+GraphQLやFalcorは何の為に作られたのか？
 
 ---
 
-### Today's theme: "API"
-
----
-
-### Clients - Server
+Background : Multiple Clients - Server
 
 <img src="resources/images/intro.png" class="no-frame" style="width:auto" alt="">
 
@@ -47,7 +42,7 @@
 <span class="fa fa-arrow-down"></span>
 
 <p class="smaller">
-  「欲しい情報を欲しい分だけ返してくれる」APIがあれば...!
+  <span style="font-size: 1.3em">欲しい情報を欲しい分だけ</span>返してくれるAPIがあれば...!
 </p>
 
 <span class="fa fa-arrow-down"></span>
@@ -264,7 +259,7 @@ mutation {
   <li>
     <a href="https://facebook.github.io/relay/" target="_blank">Relay</a>
     <p class="smaller">
-      Facebook開発のFramework. <br />
+      Facebookが開発したReactとGraphQLを統合したFramework. <br />
       GraphQL Relqy Specificationの実装が必要(後述)
     </p>
   </li>
@@ -272,10 +267,10 @@ mutation {
     <a href="http://dev.apollodata.com/react/" target="_blank">react-apollo</a>
     <p class="smaller">
     Meteor社開発のApollo StackにおけるReact Client. <br />
-    Apollo Stackは様々なFrameworkのGraphQL Clientを提供している
+    Apollo様々なFrameworkのGraphQL Clientを提供している(Angular/Swift/Java, etc...)
     </p>
   </li>
-  <li class="no-mark">etc...</li>
+  <li class="no-mark smaller">etc...</li>
 </ul>
 
 ---
@@ -389,13 +384,13 @@ render((
 
 <p class="smaller">
   RootContainer はRelayアプリのトップレベルに配置するコンテナ. <br />
-  Routeは下層のContainerのFragmentを束ねてGraphQLのQueryを構築する
+  Routeは下層コンテナのFragmentを結合していき、クエリを構築する
 </p>
 
 ---
 
 <p class="smaller">
-  Relayがfragmentを結合していき、クエリを組み立てる
+Rauteにより結合されるGraphQLクエリのイメージ
 </p>
 
 ```python
@@ -600,9 +595,9 @@ model.call({
 
 ---
 
-### Stack
+### Libraries(JavaScript)
 
-<ul>
+<ul class="good">
   <li>
     <a href="https://github.com/Netflix/falcor-router" target="_blank">falcor-router</a>
     <p class="smaller">
@@ -623,15 +618,20 @@ model.call({
 
 ---
 
+### Libraries(other lang)
+
 <p class="smaller">
-  C#のserver side実装があるものの、
-  基本的にJavaScript上のライブラリしか存在しない.
-  GraphQLと比較すると、活況とは言えない状況...
+  JavaScript以外のライブラリはほぼ皆無. <br />
+  (C#のServer Side向け実装が存在する程度)
+</p>
+
+<p class="smaller">
+  GraphQLと比較すると、活況とは言えないのがFalcorの現状...
 </p>
 
 ---
 
-### Falcor and React
+### React and Falcor
 
 ---
 
@@ -652,7 +652,7 @@ model.call({
 
 ---
 
-### Integrate with View Library
+### Integrate with View Libraries
 
 <p class="smaller">
   Falcor.modelにはCache変更時に発火するonChange callbackが仕込める
@@ -772,9 +772,7 @@ class AppContainer extends React.Component {
 
 ---
 
-そもそも本当に必要としているのか？
-
-自分のサービスにDemand Driven Architectureが必要か、じっくり考えた方が良い。
+### そもそも本当に必要としているのか？
 
 ---
 
@@ -789,7 +787,7 @@ class AppContainer extends React.Component {
 
 ---
 
-### DDAが向いていないケース
+### DDAが向いてなさそうなケース
 
 <ul class="bad">
   <li>デスクトップメイン。N/Wは十分高速</li>
@@ -798,13 +796,23 @@ class AppContainer extends React.Component {
 </ul>
 
 <p class="smaller">
-  複数クライアントを扱う場合も、クライアント特性毎(PC or mobile等)にendpoint(= BFF)を用意すれば十分なケースも多いのでは
+  複数クライアントを扱う場合も、クライアント特性毎(PC or mobile等)にREST endpoint(= BFF)を用意すれば十分なケースも多いのでは
+</p>
+
+---
+
+<p>
+  自分のサービスにDemand Driven Architectureが必要か
+</p>
+<p>
+  じっくり考えてからGraphQLやFalcorを適用すべき
 </p>
 
 ---
 
 ## Thank you!
 
-<a class="link smaller" href="">
-
+<a class="smaller" href="https://quramy.github.io/graph-api-note/#/">
+<span class="fa fa-github"></span>
+https://quramy.github.io/graph-api-note/
 </a>
