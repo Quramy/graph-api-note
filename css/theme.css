@@ -355,6 +355,9 @@ body {
     content: '\f00d';
     color: #d33682; }
 
+.reveal ul.wide {
+  line-height: 1.7em; }
+
 .reveal .compare {
   display: flex; }
   .reveal .compare .content {

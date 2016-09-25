@@ -77,7 +77,7 @@ presentation slides by Boguta & Nolen at QCon Newyork 2015</a>
 
 ### What's GraphQL?
 
-<ul style="lineheight: 1.3em">
+<ul class="wide">
   <li>2012年にFacebook社内で開発されたクエリ言語</li>
   <li>2015年にOpen Source化.
   <a href="https://facebook.github.io/graphql/" target="_blank">RFCの草案</a>も一応ある</li>
@@ -260,42 +260,228 @@ mutation {
 
 ### React and GraphQL
 
+<ul class="good">
+  <li>
+    <a href="https://facebook.github.io/relay/" target="_blank">Relay</a>
+    <p class="smaller">
+      Facebook開発のFramework. <br />
+      GraphQL Relqy Specificationの実装が必要(後述)
+    </p>
+  </li>
+  <li>
+    <a href="http://dev.apollodata.com/react/" target="_blank">react-apollo</a>
+    <p class="smaller">
+    Meteor社開発のApollo StackにおけるReact Client. <br />
+    Apollo Stackは様々なFrameworkのGraphQL Clientを提供している
+    </p>
+  </li>
+  <li class="no-mark">etc...</li>
+</ul>
+
 ---
 
-<ul class="good">
-  <li>Relay</li>
-  <li>Apollo stack</li>
+### Relay Architecture
+
+<img width="60%" src="https://facebook.github.io/react/img/blog/relay-components/relay-architecture.png" class="no-frame" alt="">
+<a class="link smaller" href="https://facebook.github.io/react/blog/2015/03/19/building-the-facebook-news-feed-with-relay.html#the-relay-architecture">
+https://facebook.github.io/react/blog/2015/03/19/building-the-facebook-news-feed-with-relay.html#the-relay-architecture
+</a>
+
+---
+
+### Relay provides HOC
+
+<p class="smaller">
+  Relay.createContainer はComponentにRelay Storeの値を注入する <br />
+  (react-reduxのconnectのようなもの)
+</p>
+
+```javascript
+export function Repository({repository}) {
+  const {name, description, issues} = repository;
+  return (
+    <div>
+      <h3>{name}</h3>
+      <p>{description}</p>
+      <span>{issues.totalCount}</span>
+    </div>
+  );
+}
+```
+
+```javascript
+export const RepositoryContainer = Relay.createContainer(Repository, {
+  fragments: {
+    repository: () => Relay.QL`
+      fragment on Repository {
+        name, description, issues { totalCount }
+      }
+    `
+  }
+});
+```
+
+<p class="smaller">
+注入したいpropsはGraphQLのfragment形式で記述
+</p>
+
+---
+
+### Composition
+
+```javascript
+export function Repositories({starred}) {
+  const {edges} = starred.starredRepositories;
+  return (
+    <ul>
+      {edges.map(edge => (
+        <li key={edge.node.id}><RepositoryContainer repository={edge.node} /></li>
+      ))}
+    </ul>
+  );
+}
+```
+
+```javascript
+export const RepositoriesContainer = Relay.createContainer(Repositories, {
+  fragments: {
+    starred: () => Relay.QL`
+    fragment on User {
+      starredRepositories(
+        first:10, orderBy: { field: STARRED_AT, direction: DESC }
+      ){
+        edges {
+          node {
+            id, ${RepositoryContainer.getFragment("repository")}
+          }
+        }
+      }
+    }`
+  }
+});
+```
+
+<p class="smaller">
+  Component階層に従って、fragmentもcomposeしていく
+</p>
+
+---
+
+### Root & Route
+
+
+```javascript
+export class AppRoute extends Relay.Route {
+  static queries = {
+    starred: () => Relay.QL`
+      query {
+        viewer
+      }
+    `
+  };
+  static routeName = 'AppRoute';
+}
+
+render((
+  <RootContainer Component={RepositoriesContainer} route={new AppRoute()}/>
+), document.querySelector("#app"));
+```
+
+<p class="smaller">
+  RootContainer はRelayアプリのトップレベルに配置するコンテナ. <br />
+  Routeは下層のContainerのFragmentを束ねてGraphQLのQueryを構築する
+</p>
+
+---
+
+<p class="smaller">
+  Relayがfragmentを結合していき、クエリを組み立てる
+</p>
+
+```python
+# AppRaute
+query {
+  viewer { ...F2 }
+}
+
+# from RepositoriesContainer
+fragment F2 on User {
+  starredRepositories(
+    first: 10, orderBy: {field: STARRED_AT, direction: DESC}
+  ){
+    edges {
+      node { id, ...F1 }
+    }
+  }
+}
+
+# from RepositoryContainer
+fragment F1 on Repository {
+  name, description, issues {totalCount}
+}
+```
+
+---
+
+<img class="no-frame" src="resources/images/relay_composition.png" alt="">
+
+---
+
+### Caution
+
+<p class="smaller">
+  <b> 注意: GraphQLのServerがあれば必ずしもRelayから繋げる訳ではない </b>
+</p>
+
+<p class="smaller">
+  対応するServerはGraphQL Relay Specを実装する必要がある:
+  <a class="link" href="https://facebook.github.io/relay/docs/graphql-relay-specification.html" target="_blank">https://facebook.github.io/relay/docs/graphql-relay-specification.html</a>
+</p>
+
+<p class="smaller">
+  Relayが内部のChache管理やPagingのために必要なため.
+</p>
+
+---
+
+#### GraphQL Relay Specificationの例(一部)：
+
+<ul style="font-size:smaller">
+  <li>全てのObject Typeには一意なidフィールドを用意すること</li>
+  <li>コレクションの要素は edge interface を実装すること</li>
+  <li>Mutation の引数には clientMutationIdというパラメータを含めること</li>
+  <li>Mutation の引数は inputという名前にすること</li>
+  <li>etc...</li>
 </ul>
 
-#### React-Relay
-
-<ul>
-  <li>GraphQLをベースにしたFramework</li>
-  <li>Relay Specificationに則ってGraphQL Serverを実装する必要がある</li>
-</ul>
+<p class="smaller">※ GitHub GraphQL APIはこのSpecを満たしている</p>
 
 ---
 
 ## Falcor
 
+<img src="resources/images/falcor_logo.svg" class="no-frame" alt="">
+
 ---
 
 ### What's Falcor?
 
-<ul>
+<ul class="wide">
   <li>Netflixが開発したJavaScript Library(Middleware)</li>
   <li>2015年にオープンソース化</li>
   <li>2016年9月現在、Developer Preview</li>
-  <li>Client - Server間で仮想的にJSONを共有する</li>
 </ul>
 
 ---
 
-### What's Falcor ?
+### One Model Everywhere
 
-<quote>
-Falcor lets you represent all your remote data sources as a single domain model via JSON Graph. Falcor makes it easy to access as much or as little of your model as you want, when you want it.
-</quote>
+<p class="smaller">
+Client - Server間でグラフ構造を透過的に扱うイメージ. <br/>
+Clientには必要な部分グラフがcacheされていく.
+</p>
+
+<img class="no-frame" src="resources/images/falcor_json_g.png" alt="">
 
 ---
 
@@ -328,7 +514,13 @@ model.get(
 
 ---
 
-<img src="http://netflix.github.io/falcor/images/model-caching.png" alt="" class="no-frame"/>
+### Model has own cache
+
+<p class="smaller">
+Clientに存在しない部分グラフをServerへ問い合わせる
+</p>
+
+<img width="60%" src="http://netflix.github.io/falcor/images/model-caching.png" alt="" class="no-frame"/>
 <a class="link smaller" href="http://netflix.github.io/falcor/starter/how-does-falcor-work.html#caching">http://netflix.github.io/falcor/starter/how-does-falcor-work.html#caching</a>
 
 ---
@@ -336,7 +528,8 @@ model.get(
 ### JSON Graph & Reference
 
 <p class="smaller">
-  参照構造をClient-Serverで共有する仕組み
+  DataSourceはJSON Graphを返却する <br />
+  (JSON Graph : 参照構造をClient-Serverで共有する仕組み)
 </p>
 
 ```javascript
@@ -378,7 +571,7 @@ model.get(
 <ul class="good">
   <li>FalcorのJSON Graphは正規化されたデータが扱える</li>
   <li>
-    <a href="https://github.com/paularmstrong/normalizr" target="_blank">normalizr</a> と似ている
+    <a href="https://github.com/paularmstrong/normalizr" target="_blank">paularmstrong/normalizr</a> と似ている
   </li>
 </ul>
 
@@ -386,7 +579,55 @@ model.get(
 
 ### Set/Call
 
-GraphQLにMutationが存在するように、Falcorには
+<p class="smaller">
+  GraphQLにMutationが存在するように、<br />Falcorにも変更を扱う独自の仕組みがある
+</p>
+
+```javascript
+// setは冪等な操作に利用する
+model.set({
+  path: "viewer.login",
+  value: "QURAMY"
+}).subscribe(...);
+
+// callは冪等でない操作に利用する
+model.call({
+  path: "starredRepositories[0].issues[0].addComment",
+  args: [{body: "some comment"}],
+  ["body", "author.login", "author.avatarURL"]
+}).subscribe(...);
+```
+
+---
+
+### Stack
+
+<ul>
+  <li>
+    <a href="https://github.com/Netflix/falcor-router" target="_blank">falcor-router</a>
+    <p class="smaller">
+      FalcorのrequestをからJSON Graphを生成するための機構
+    </p>
+  </li>
+  <li>
+    <a href="https://github.com/Netflix/falcor-express" target="_blank">falcor-express</a>
+    <p class="smaller">
+      falcor-routerで作成したRouterをExpressに登録するmiddleware
+    </p>
+  </li>
+  <li>
+    <a href="https://github.com/Netflix/falcor-http-datasource" target="_blank">falcor-http-datasource</a>
+    <p class="smaller">HTTP上に公開されたFalcorエンドポイントに接続するためのDataSource</p>
+  </li>
+</ul>
+
+---
+
+<p class="smaller">
+  C#のserver side実装があるものの、
+  基本的にJavaScript上のライブラリしか存在しない.
+  GraphQLと比較すると、活況とは言えない状況...
+</p>
 
 ---
 
@@ -398,12 +639,12 @@ GraphQLにMutationが存在するように、Falcorには
 
 
 <p class="smaller">
-  Falcorはviewからは切り離されたライブラリ. <br />
+  FalcorはViewには依存していないライブラリ. <br />
   (MVCのModel部分のみを担当するイメージ)
 </p>
 
 <div>
-  <img width="60%" src="http://netflix.github.io/falcor/images/async-mvc.png" alt="" class="no-frame">
+  <img width="50%" src="http://netflix.github.io/falcor/images/async-mvc.png" alt="" class="no-frame"> <br />
   <a class="link smaller" href="http://netflix.github.io/falcor/starter/what-is-falcor.html#bind-to-the-cloud">
     http://netflix.github.io/falcor/starter/what-is-falcor.html#bind-to-the-cloud
   </a>
@@ -411,9 +652,15 @@ GraphQLにMutationが存在するように、Falcorには
 
 ---
 
-Falcorはデータを取得した際に発火するeventがある.
+### Integrate with View Library
 
-このeventを `componentDidMount` で購読し、下層のcomponentのpropsを更新するHOCを作成するのが常套手段.
+<p class="smaller">
+  Falcor.modelにはCache変更時に発火するonChange callbackが仕込める
+</p>
+
+<p class="smaller">
+  このイベントを購読してViewのstateを更新するのが常套手段
+</p>
 
 ---
 
@@ -451,7 +698,8 @@ class AppContainer extends React.Component {
   <li>
     <a href="https://speakerdeck.com/btholt/falcorjs-and-react" target="_blank">falcorjs-and-react</a>
     <p class="smaller">
-      Netflixの中の人によるFalcor & Reactの説明資料
+      Netflixの中の人によるFalcor & Reactの説明資料. <br/>
+      複数のqueryを連結することで、RelayのFragment Composition相当を実装する方法も示されている
     </p>
   </li>
   <li>
@@ -463,8 +711,9 @@ class AppContainer extends React.Component {
 
 ---
 
-#### Realy v.s. Falcor
 
+<!--
+#### Realy v.s. Falcor
 <table style="font-size: 0.7em">
   <thead>
     <tr>
@@ -494,8 +743,7 @@ class AppContainer extends React.Component {
     <td>(none)</td>
   </tr>
 </table>
-
----
+-->
 
 
 ## まとめ
@@ -550,10 +798,13 @@ class AppContainer extends React.Component {
 </ul>
 
 <p class="smaller">
-  複数クライアントを扱う場合も、クライアント特性毎(PC or mobile等)にendpointを用意すれば十分なケースも多いのでは
-  (Backend For Frontend)
+  複数クライアントを扱う場合も、クライアント特性毎(PC or mobile等)にendpoint(= BFF)を用意すれば十分なケースも多いのでは
 </p>
 
 ---
 
 ## Thank you!
+
+<a class="link smaller" href="">
+
+</a>
