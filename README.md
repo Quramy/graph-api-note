@@ -1,17 +1,6 @@
-# reveal template
+# Graph API Note
 
-1. clone this repo
-1. `npm i && bower i`
+2016.09.27向け資料
 
-## run
-
-1. `npm start`
-
-## build
-
-1. `npm run dist`
-
-## upload to github pages
-
-1. `npm run gh-pages`
+<a href="https://quramy.github.io/graph-api-note/#" target="_blank">https://quramy.github.io/graph-api-note/#</a>
 
