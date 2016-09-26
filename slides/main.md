@@ -109,7 +109,7 @@ query {
 ```
 
 <p class="smaller">
-  GitHub GraphQL APIで直近に <span class="fa fa-star"></span> したRepoを10件から  <br />
+GitHub GraphQL APIで直近に <span class="fa fa-star"></span> したRepo 10件から  <br />
 名前、説明、issue件数のフィールドを取得する.
 </p>
 
@@ -204,8 +204,8 @@ mutation {
 を実行することで完全なSchemaを取得可能
 </p>
 
----
 
+<!--
 ### Libraries(JavaScript)
 
 <ul class="good">
@@ -230,7 +230,6 @@ mutation {
   </li>
 </ul>
 
----
 
 ### Libraries(other lang)
 
@@ -250,6 +249,7 @@ mutation {
 <p class="smaller">
 <a href="https://github.com/chentsulin/awesome-graphql" target="_blank">awesome-graphql</a> に色々載ってます
 </p>
+-->
 
 ---
 
@@ -260,7 +260,7 @@ mutation {
     <a href="https://facebook.github.io/relay/" target="_blank">Relay</a>
     <p class="smaller">
       Facebookが開発したReactとGraphQLを統合したFramework. <br />
-      GraphQL Relqy Specificationの実装が必要(後述)
+      GraphQL Relay Specificationの実装が必要(後述)
     </p>
   </li>
   <li>
@@ -425,7 +425,7 @@ fragment F1 on Repository {
 ### Caution
 
 <p class="smaller">
-  <b> 注意: GraphQLのServerがあれば必ずしもRelayから繋げる訳ではない </b>
+  <b> 注意: GraphQLのServerがある ≠  Relayから接続できる</b>
 </p>
 
 <p class="smaller">
@@ -434,7 +434,7 @@ fragment F1 on Repository {
 </p>
 
 <p class="smaller">
-  Relayが内部のChache管理やPagingのために必要なため.
+  Relayが内部のCache管理やPagingのために用いるため
 </p>
 
 ---
@@ -442,10 +442,10 @@ fragment F1 on Repository {
 #### GraphQL Relay Specificationの例(一部)：
 
 <ul style="font-size:smaller">
-  <li>全てのObject Typeには一意なidフィールドを用意すること</li>
-  <li>コレクションの要素は edge interface を実装すること</li>
-  <li>Mutation の引数には clientMutationIdというパラメータを含めること</li>
+  <li>コレクションの要素は Edge interface を実装すること</li>
+  <li>EdgeにはNode interfaceを実装したnodeフィールドを含めること</li>
   <li>Mutation の引数は inputという名前にすること</li>
+  <li>Mutation の引数には clientMutationIdフィールドを含めること</li>
   <li>etc...</li>
 </ul>
 
@@ -507,8 +507,7 @@ model.get(
 });
 ```
 
----
-
+<!--
 ### Model has own cache
 
 <p class="smaller">
@@ -517,14 +516,15 @@ Clientに存在しない部分グラフをServerへ問い合わせる
 
 <img width="60%" src="http://netflix.github.io/falcor/images/model-caching.png" alt="" class="no-frame"/>
 <a class="link smaller" href="http://netflix.github.io/falcor/starter/how-does-falcor-work.html#caching">http://netflix.github.io/falcor/starter/how-does-falcor-work.html#caching</a>
+-->
 
 ---
 
 ### JSON Graph & Reference
 
 <p class="smaller">
-  DataSourceはJSON Graphを返却する <br />
-  (JSON Graph : 参照構造をClient-Serverで共有する仕組み)
+  Falcorは内部でJSON Graphというデータ形式でCacheを構築する <br />
+  JSON Graphは"参照"をClient-Serverで共有する為の仕組み
 </p>
 
 ```javascript
@@ -564,7 +564,7 @@ Clientに存在しない部分グラフをServerへ問い合わせる
 ### Normalized data
 
 <ul class="good">
-  <li>FalcorのJSON Graphは正規化されたデータが扱える</li>
+  <li>Falcorが扱うデータ(JSON Graph)は正規化されている</li>
   <li>
     <a href="https://github.com/paularmstrong/normalizr" target="_blank">paularmstrong/normalizr</a> と似ている
   </li>
@@ -593,8 +593,8 @@ model.call({
 }).subscribe(...);
 ```
 
----
 
+<!--
 ### Libraries(JavaScript)
 
 <ul class="good">
@@ -616,7 +616,6 @@ model.call({
   </li>
 </ul>
 
----
 
 ### Libraries(other lang)
 
@@ -628,6 +627,7 @@ model.call({
 <p class="smaller">
   GraphQLと比較すると、活況とは言えないのがFalcorの現状...
 </p>
+-->
 
 ---
 
