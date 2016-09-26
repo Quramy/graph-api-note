@@ -266,8 +266,8 @@ mutation {
   <li>
     <a href="http://dev.apollodata.com/react/" target="_blank">react-apollo</a>
     <p class="smaller">
-    Meteor社開発のApollo StackにおけるReact Client. <br />
-    Apollo様々なFrameworkのGraphQL Clientを提供している(Angular/Swift/Java, etc...)
+    Meteorが開発したApollo StackにおけるReact Client. <br />
+    Apolloは様々なFrameworkのGraphQL Clientを提供している(Angular/Swift/Java, etc...)
     </p>
   </li>
   <li class="no-mark smaller">etc...</li>
@@ -565,9 +565,8 @@ Clientに存在しない部分グラフをServerへ問い合わせる
 
 <ul class="good">
   <li>Falcorが扱うデータ(JSON Graph)は正規化されている</li>
-  <li>
-    <a href="https://github.com/paularmstrong/normalizr" target="_blank">paularmstrong/normalizr</a> と似ている
-  </li>
+  <li>One Fact in One Place</li>
+  <li><a href="https://github.com/paularmstrong/normalizr" target="_blank">paularmstrong/normalizr</a> と似ている</li>
 </ul>
 
 ---
@@ -750,29 +749,37 @@ class AppContainer extends React.Component {
 
 ---
 
-### Demand Driven Architecture
+### DDA for Front-end
 
 <ul class="good">
   <li>フロントの都合に合わせてAPIをリクエスト出来る</li>
-  <li>Propertyや結合関係も思いのまま</li>
-  <li>Relay/Falcorは正規化, cacheの面倒も見てくれる</li>
+  <li>取得するPropertyやネストの深さも思いのまま</li>
+  <li>フロント改修の度にAPIをメンテする必要が無くなる</li>
+  <li>(Relay/Falcorであれば)正規化の面倒も見てくれる</li>
+  <li class="no-mark smaller">etc...</li>
 </ul>
 
-良いことがいっぱい！
+良い事ずくめだ！
 
 ---
 
 でも裏を返すと...
 
 <ul class="bad">
-  <li>複雑さをServer Sideに押し付けている</li>
+  <li>複雑さをAPIサーバ側に押し付けているのでは？</li>
   <li>データの結合関係を決められない(=SQLに頼りにくい)</li>
-  <li>容易にN + 1問題が発生する. 性能を担保できるのか?</li>
+  <li>
+    容易にN + 1問題が発生する. 性能を担保できるのか?
+    <p class="smaller">
+      <a href="https://github.com/facebook/dataloader">dataloader</a> 等のcaching/batching libraryを用いてDown Streamへの負荷を低減することは可能
+    </p>
+  </li>
+  <li class="no-mark smaller">etc...</li>
 </ul>
 
 ---
 
-### そもそも本当に必要としているのか？
+### 本当にDDAを必要としているのか？
 
 ---
 
@@ -780,8 +787,7 @@ class AppContainer extends React.Component {
 
 <ul class="good">
   <li>複数種類のクライアントを考えている</li>
-  <li>帯域制限要求が厳しい</li>
-  <li>APIを公開するので、柔軟に呼べるようにしたい</li>
+  <li>低速回線対応. 通信量を絞り込みたい</li>
   <li>扱うデータ構造に多対多が頻出する</li>
 </ul>
 
@@ -790,7 +796,7 @@ class AppContainer extends React.Component {
 ### DDAが向いてなさそうなケース
 
 <ul class="bad">
-  <li>デスクトップメイン。N/Wは十分高速</li>
+  <li>デスクトップメイン。帯域幅も十分</li>
   <li>自社のクライアントから呼びだせればそれで良い</li>
   <li>木構造が扱えれば十分</li>
 </ul>
