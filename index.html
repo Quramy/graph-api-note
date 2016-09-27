@@ -69,31 +69,6 @@ by @Quramy
                         
     <section data-markdown="" data-separator="^?
 ---?
-"><script type="template/markdown">##  About me
-
-倉見 洋輔 @Quramy
-<a href="https://twitter.com/quramy" style="color:inherit;font-size:larger" target="_blank"><span class="fa fa-twitter-square"></span> </a>
-<a href="https://github.com/Quramy" style="color:inherit;font-size:larger" target="_blank"><span class="fa fa-github-square"></span></a>
-
-<img src="./resources/images/myProf.png" alt="" class="no-frame" style="width:120px">
-
-<p class="smaller">
-株式会社WACUL所属のフロントエンジニア
-</p>
-<p class="smaller">
-日常業務ではAngularでSPAを開発していますが、<br />
-社内向けツール等でReactも使っています
-</p>
-</script></section>
-
-
-                    
-                    
-                
-                    
-                        
-    <section data-markdown="" data-separator="^?
----?
 "><script type="template/markdown">### Agenda
 
 1. Introduction
@@ -770,7 +745,7 @@ model.call({
 </p>
 
 <p class="smaller">
-  このイベントを購読してViewのstateを更新するのが常套手段
+  このイベントを購読してViewのstateを更新すればよい
 </p>
 
 ---
@@ -791,12 +766,12 @@ class AppContainer extends React.Component {
   componentDidMount() {
     model.event.on("update", () => {
       model.get(query).subscribe(({json}) => {
-        this.setState(toState(json));
+        this.setState({falcorData: json});
       });
     });
   }
   render () {
-    return <App appProps={this.state} />;
+    return <App falcorData={this.falcorData} />;
   }
 }
 ```

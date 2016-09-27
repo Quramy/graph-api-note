@@ -658,7 +658,7 @@ model.call({
 </p>
 
 <p class="smaller">
-  このイベントを購読してViewのstateを更新するのが常套手段
+  このイベントを購読してViewのstateを更新すればよい
 </p>
 
 ---
@@ -679,12 +679,12 @@ class AppContainer extends React.Component {
   componentDidMount() {
     model.event.on("update", () => {
       model.get(query).subscribe(({json}) => {
-        this.setState(toState(json));
+        this.setState({falcorData: json});
       });
     });
   }
   render () {
-    return <App appProps={this.state} />;
+    return <App falcorData={this.falcorData} />;
   }
 }
 ```
